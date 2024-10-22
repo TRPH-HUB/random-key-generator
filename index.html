@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Key Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f4f4f4;
+            position: relative;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #keyDisplay {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #message {
+            margin-top: 20px;
+            color: red;
+        }
+        #logoRight {
+            width: 200px; /* ปรับขนาดตามที่ต้องการ */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #logoLeft {
+            width: 200px; /* ปรับขนาดตามที่ต้องการ */
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        #headerTitle {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        function generateKey() {
+            let today = new Date().toISOString().split('T')[0];
+            let lastClick = localStorage.getItem("lastClick");
+
+            if (lastClick === today) {
+                document.getElementById("message").innerText = "คุณได้สร้างคีย์แล้วในวันนี้!";
+                return;
+            }
+
+            let key = Math.random().toString(36).substring(2, 15);
+            document.getElementById("keyDisplay").innerText = key;
+            alert("New key generated: " + key);
+
+            localStorage.setItem("lastClick", today);
+            localStorage.setItem("lastKey", key);
+            document.querySelector("button").disabled = true;
+        }
+
+        function toggleHistory() {
+            let today = new Date().toISOString().split('T')[0];
+            let lastClick = localStorage.getItem("lastClick");
+            let lastKey = localStorage.getItem("lastKey");
+            let historyDisplay = document.getElementById("historyDisplay");
+
+            if (lastClick === today && lastKey) {
+                historyDisplay.innerText = "ประวัติการสร้างคีย์ในวันนี้: " + lastKey;
+            } else {
+                historyDisplay.innerText = "ไม่มีประวัติการสร้างคีย์ในวันนี้";
+            }
+        }
+
+        window.onload = function() {
+            let today = new Date().toISOString().split('T')[0];
+            let lastClick = localStorage.getItem("lastClick");
+
+            if (lastClick !== today) {
+                localStorage.removeItem("lastClick");
+                localStorage.removeItem("lastKey");
+            }
+
+            if (lastClick === today) {
+                document.querySelector("button").disabled = true;
+                document.getElementById("message").innerText = "คุณได้สร้างคีย์แล้วในวันนี้!";
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- ใส่ชื่อ UPPERCUT HUB ด้านบน -->
+    <div id="headerTitle">UPPERCUT HUB</div>
+    <!-- เพิ่มรูปภาพไว้มุมขวาบนและมุมซ้ายบน -->
+    <img id="logoRight" src="https://cdn.discordapp.com/attachments/1052889673053245490/1297865596872163370/N_HUB_png-Recovered.png?ex=67177b07&is=67162987&hm=05c2f82f27e268b18e7fb7af08925f2b3fa64dabc6bff655c12d4211de6b60d8" alt="Logo Right">
+    <img id="logoLeft" src="https://cdn.discordapp.com/attachments/1052889673053245490/1297865596872163370/N_HUB_png-Recovered.png?ex=67177b07&is=67162987&hm=05c2f82f27e268b18e7fb7af08925f2b3fa64dabc6bff655c12d4211de6b60d8" alt="Logo Left">
+    <h1>Random Key Generator</h1>
+    <button onclick="generateKey()">Generate Key</button>
+    <button onclick="toggleHistory()">History Key</button>
+    <p id="keyDisplay">Click the button to generate a key!</p>
+    <p id="message"></p>
+    <p id="historyDisplay"></p>
+</body>
+</html>
