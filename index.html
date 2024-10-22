@@ -60,14 +60,23 @@
                 return;
             }
 
-            // Generate the key in the format "TRPH_HUB_XXXXXXXXXX"
-            let randomPart = Math.random().toString(36).substring(2, 12).toUpperCase(); // Generate a random 10-character string
-            let key = "TRPH_HUB_" + randomPart;
-            document.getElementById("keyDisplay").innerText = key;
-            alert("New key generated: " + key);
+            let existingKeys = JSON.parse(localStorage.getItem("generatedKeys")) || [];
+            let newKey;
 
+            do {
+                // Generate the key in the format "TRPH_HUB_XXXXXXXXXX"
+                let randomPart = Math.random().toString(36).substring(2, 12).toUpperCase(); // Generate a random 10-character string
+                newKey = "TRPH_HUB_" + randomPart;
+            } while (existingKeys.includes(newKey)); // Ensure the new key is unique
+
+            // Display the new unique key
+            document.getElementById("keyDisplay").innerText = newKey;
+            alert("New key generated: " + newKey);
+
+            // Save the new key and today's date
+            existingKeys.push(newKey);
+            localStorage.setItem("generatedKeys", JSON.stringify(existingKeys));
             localStorage.setItem("lastClick", today);
-            localStorage.setItem("lastKey", key);
             document.querySelector("button").disabled = true;
         }
 
