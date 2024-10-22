@@ -22,6 +22,11 @@
             margin-top: 20px;
             font-size: 24px;
             font-weight: bold;
+            display: inline-block;
+            padding: 10px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            background-color: #fff;
         }
         #message {
             margin-top: 20px;
@@ -79,6 +84,15 @@
             }
         }
 
+        function copyKey() {
+            const key = document.getElementById("keyDisplay").innerText;
+            navigator.clipboard.writeText(key).then(() => {
+                alert("คัดลอกคีย์: " + key);
+            }).catch(err => {
+                console.error('Error copying key: ', err);
+            });
+        }
+
         window.onload = function() {
             let today = new Date().toISOString().split('T')[0];
             let lastClick = localStorage.getItem("lastClick");
@@ -102,7 +116,12 @@
     <h1>TRPH HUB Key Generator</h1>
     <button onclick="generateKey()">Generate Key</button>
     <button onclick="toggleHistory()">History Key</button>
-    <p id="keyDisplay">Click the button to generate a key!</p>
+    
+    <div>
+        <p id="keyDisplay">Click the button to generate a key!</p>
+        <button onclick="copyKey()">คัดลอก</button>
+    </div>
+    
     <p id="message"></p>
     <p id="historyDisplay"></p>
 </body>
