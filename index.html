@@ -76,17 +76,17 @@
             // Save the new key and today's date
             existingKeys.push(newKey);
             localStorage.setItem("generatedKeys", JSON.stringify(existingKeys));
-            localStorage.setItem("lastClick", today);
-            document.querySelector("button").disabled = true;
+            localStorage.setItem("lastKey", newKey); // Save the last generated key
+            localStorage.setItem("lastClick", today); // Save today's date
+            document.querySelector("button").disabled = true; // Disable the button
         }
 
         function toggleHistory() {
             let today = new Date().toISOString().split('T')[0];
-            let lastClick = localStorage.getItem("lastClick");
             let lastKey = localStorage.getItem("lastKey");
             let historyDisplay = document.getElementById("historyDisplay");
 
-            if (lastClick === today && lastKey) {
+            if (lastKey) {
                 historyDisplay.innerText = "ประวัติการสร้างคีย์ในวันนี้: " + lastKey;
             } else {
                 historyDisplay.innerText = "ไม่มีประวัติการสร้างคีย์ในวันนี้";
@@ -105,14 +105,22 @@
         window.onload = function() {
             let today = new Date().toISOString().split('T')[0];
             let lastClick = localStorage.getItem("lastClick");
+            let lastKey = localStorage.getItem("lastKey");
 
+            // Reset keys if the date has changed
             if (lastClick !== today) {
                 localStorage.removeItem("lastClick");
                 localStorage.removeItem("lastKey");
-            }
-
-            if (lastClick === today) {
-                document.querySelector("button").disabled = true;
+                localStorage.removeItem("generatedKeys");
+                document.querySelector("button").disabled = false; // Enable the button for a new key
+                document.getElementById("keyDisplay").innerText = "Click the button to generate a key!";
+                document.getElementById("message").innerText = "";
+            } else {
+                // Display the last generated key if it's still valid
+                if (lastKey) {
+                    document.getElementById("keyDisplay").innerText = lastKey;
+                }
+                document.querySelector("button").disabled = true; // Disable the button if a key has already been generated
                 document.getElementById("message").innerText = "คุณได้สร้างคีย์แล้วในวันนี้!";
             }
         }
