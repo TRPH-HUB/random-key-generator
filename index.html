@@ -55,9 +55,9 @@
                 return;
             }
 
-            // Generate the key in the format "TRPH_HUBXXXXXXXXXX"
+            // Generate the key in the format "TRPH_HUB_XXXXXXXXXX"
             let randomPart = Math.random().toString(36).substring(2, 12).toUpperCase(); // Generate a random 10-character string
-            let key = "TRPH_HUB" + randomPart;
+            let key = "TRPH_HUB_" + randomPart;
             document.getElementById("keyDisplay").innerText = key;
             alert("New key generated: " + key);
 
