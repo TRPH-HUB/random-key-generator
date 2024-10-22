@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Key Generator</title>
+    <title>TRPH HUB Key Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -55,7 +55,9 @@
                 return;
             }
 
-            let key = Math.random().toString(36).substring(2, 15);
+            // Generate the key in the format "TRPH_HUBXXXXXXXXXX"
+            let randomPart = Math.random().toString(36).substring(2, 12).toUpperCase(); // Generate a random 10-character string
+            let key = "TRPH_HUB" + randomPart;
             document.getElementById("keyDisplay").innerText = key;
             alert("New key generated: " + key);
 
@@ -94,12 +96,10 @@
     </script>
 </head>
 <body>
-    <!-- เปลี่ยนชื่อเป็น TRPH HUB -->
     <div id="headerTitle">TRPH HUB</div>
-    <!-- เพิ่มรูปภาพไว้มุมขวาบนและมุมซ้ายบน -->
     <img id="logoRight" src="https://cdn.discordapp.com/attachments/1052889673053245490/1297865596872163370/N_HUB_png-Recovered.png?ex=67177b07&is=67162987&hm=05c2f82f27e268b18e7fb7af08925f2b3fa64dabc6bff655c12d4211de6b60d8" alt="Logo Right">
     <img id="logoLeft" src="https://cdn.discordapp.com/attachments/1052889673053245490/1297865596872163370/N_HUB_png-Recovered.png?ex=67177b07&is=67162987&hm=05c2f82f27e268b18e7fb7af08925f2b3fa64dabc6bff655c12d4211de6b60d8" alt="Logo Left">
-    <h1>Random Key Generator</h1>
+    <h1>TRPH HUB Key Generator</h1>
     <button onclick="generateKey()">Generate Key</button>
     <button onclick="toggleHistory()">History Key</button>
     <p id="keyDisplay">Click the button to generate a key!</p>
