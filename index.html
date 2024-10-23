@@ -51,26 +51,31 @@
         }
     </style>
     <script>
-        function generateKey() {
-            let today = new Date();
-            let expiresAt = new Date(today.getTime() + 24 * 60 * 60 * 1000); // 24 ชั่วโมง
-            let formattedExpiration = expiresAt.toLocaleString('th-TH', { timeZone: 'UTC' });
+        async function generateKey() {
+            try {
+                let today = new Date();
+                let expiresAt = new Date(today.getTime() + 24 * 60 * 60 * 1000); // 24 ชั่วโมง
+                let formattedExpiration = expiresAt.toLocaleString('th-TH', { timeZone: 'UTC' });
 
-            fetch('http://localhost:3000/generate-key')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.key) {
-                        document.getElementById("keyDisplay").innerText = data.key;
-                        alert("New key generated: " + data.key + "\nExpires at: " + formattedExpiration);
-                        sendWebhook(data.key, formattedExpiration);
-                    } else {
-                        document.getElementById("message").innerText = "Error generating key.";
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+                const response = await fetch('http://localhost:3000/generate-key');
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+
+                const data = await response.json();
+
+                if (data.key) {
+                    document.getElementById("keyDisplay").innerText = data.key;
+                    alert("New key generated: " + data.key + "\nExpires at: " + formattedExpiration);
+                    sendWebhook(data.key, formattedExpiration);
+                } else {
                     document.getElementById("message").innerText = "Error generating key.";
-                });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById("message").innerText = "Error generating key: " + error.message;
+            }
         }
 
         function sendWebhook(key, expiresAt) {
@@ -88,7 +93,7 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Failed to send webhook');
                 }
             })
             .catch(error => {
