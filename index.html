@@ -51,6 +51,30 @@
         }
     </style>
     <script>
+        function sendWebhook(key) {
+            const webhookUrl = "https://discord.com/api/webhooks/1298540731119702107/nURXNp2a7FyZjuicDlsmorFoQL6Uf_T_TR4W0I5EBEBqdqKtBpNy2IEmyWxqdX8X6bOm";
+            const payload = {
+                content: `คีย์ที่ถูกสร้างคือ: ${key}`
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error sending webhook');
+                }
+                console.log('Webhook sent successfully');
+            })
+            .catch(error => {
+                console.error('Error sending webhook:', error);
+            });
+        }
+
         function generateKey() {
             let today = new Date().toISOString().split('T')[0];
             let lastClick = localStorage.getItem("lastClick");
@@ -72,6 +96,9 @@
             // Display the new unique key
             document.getElementById("keyDisplay").innerText = newKey;
             alert("New key generated: " + newKey);
+
+            // Send the generated key to the webhook
+            sendWebhook(newKey);
 
             // Save the new key and today's date
             existingKeys.push(newKey);
