@@ -52,53 +52,58 @@
     </style>
     <script>
         async function generateKey() {
-            try {
-                let today = new Date();
-                let expiresAt = new Date(today.getTime() + 24 * 60 * 60 * 1000); // 24 ชั่วโมง
-                let formattedExpiration = expiresAt.toLocaleString('th-TH', { timeZone: 'UTC' });
+            let today = new Date().toISOString().split('T')[0];
+            let lastClick = localStorage.getItem("lastClick");
 
-                const response = await fetch('http://localhost:3000/generate-key');
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-
-                const data = await response.json();
-
-                if (data.key) {
-                    document.getElementById("keyDisplay").innerText = data.key;
-                    alert("New key generated: " + data.key + "\nExpires at: " + formattedExpiration);
-                    sendWebhook(data.key, formattedExpiration);
-                } else {
-                    document.getElementById("message").innerText = "Error generating key.";
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById("message").innerText = "Error generating key: " + error.message;
+            if (lastClick === today) {
+                document.getElementById("message").innerText = "คุณได้สร้างคีย์แล้วในวันนี้!";
+                return;
             }
+
+            let existingKeys = JSON.parse(localStorage.getItem("generatedKeys")) || [];
+            let newKey;
+
+            do {
+                // Generate the key in the format "TRPH_HUB_XXXXXXXXXX"
+                let randomPart = Math.random().toString(36).substring(2, 12).toUpperCase(); // Generate a random 10-character string
+                newKey = "TRPH_HUB_" + randomPart;
+            } while (existingKeys.includes(newKey)); // Ensure the new key is unique
+
+            // Display the new unique key
+            document.getElementById("keyDisplay").innerText = newKey;
+            alert("New key generated: " + newKey);
+
+            // Send the generated key to the Discord webhook
+            await sendWebhook(newKey);
+
+            // Save the new key and today's date
+            existingKeys.push(newKey);
+            localStorage.setItem("generatedKeys", JSON.stringify(existingKeys));
+            localStorage.setItem("lastKey", newKey); // Save the last generated key
+            localStorage.setItem("lastClick", today); // Save today's date
+            document.querySelector("button").disabled = true; // Disable the button
         }
 
-        function sendWebhook(key, expiresAt) {
-            const webhookUrl = "https://discord.com/api/webhooks/1298540731119702107/nURXNp2a7FyZjuicDlsmorFoQL6Uf_T_TR4W0I5EBEBqdqKtBpNy2IEmyWxqdX8X6bOm";
-            const data = {
-                content: `Key generated: ${key}\nExpires at: ${expiresAt}`
+        async function sendWebhook(key) {
+            const webhookURL = "https://discord.com/api/webhooks/1298540731119702107/nURXNp2a7FyZjuicDlsmorFoQL6Uf_T_TR4W0I5EBEBqdqKtBpNy2IEmyWxqdX8X6bOm";
+            const expirationTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+
+            const payload = {
+                content: `Generated Key: ${key}\nExpires at: ${expirationTime.toISOString()}`
             };
 
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to send webhook');
-                }
-            })
-            .catch(error => {
+            try {
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (error) {
                 console.error('Error sending webhook:', error);
-            });
+                document.getElementById("message").innerText = "Error sending webhook.";
+            }
         }
 
         function toggleHistory() {
